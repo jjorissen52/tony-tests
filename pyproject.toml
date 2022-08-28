@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "tony_tests"
+version = "0.1.0"
+description = "Just seeing how Tony is progressing"
+authors = ["jjorissen52 <jjorissen52@gmail.com>"]
+
+[tool.poetry.scripts]
+tony = "cli:main"
+
+[tool.poetry.dependencies]
+python = "^3.7"
+pytest = "^7.1.2"
+fire = "^0.4.0"
+rich = "^12.5.1"
+
+[tool.poetry.dev-dependencies]
+
+[tool.black]
+line-length = 120
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

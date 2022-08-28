@@ -1,0 +1,10 @@
+/.idea
+/.vscode
+/venv
+/.pytest_cache
+/__pycache__
+
+*.pyc
+*.pyi
+
+/tony_tests/solutions/*
