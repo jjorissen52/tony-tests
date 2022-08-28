@@ -1,6 +1,7 @@
 import collections
 import json
 import os
+import re
 from typing import List
 
 import fire
@@ -10,12 +11,9 @@ from pathlib import Path
 from rich.markdown import Markdown
 from rich.table import Table
 
+from tony_tests.settings import TEST_DIR, PROBLEM_DIR, RESULTS_FILE
+from tony_tests.tests.utils import SOLUTION_DIR
 from tony_tests.utils import match_pattern, console, error
-
-BASE_DIR = Path(__file__).parent / "tony_tests"
-TEST_DIR = BASE_DIR / "tests"
-PROBLEM_DIR = BASE_DIR / "problems"
-RESULTS_FILE = Path(os.environ["HOME"]) / ".config" / "tony_tests" / "results.json"
 
 result_tup = collections.namedtuple("result", "problem,result")
 
@@ -32,11 +30,21 @@ def store_results(results: List[result_tup]):
     with open(RESULTS_FILE, "w") as w:
         json.dump(current, w)
 
+
 class CLI:
     def problem(self, pattern):
         matched = match_pattern("", "md", pattern, PROBLEM_DIR)
         with open(matched) as p:
             console.print(Markdown(p.read()))
+
+    def solve(self, pattern):
+        matched = match_pattern("", "md", pattern, PROBLEM_DIR)
+        new_solution = Path(SOLUTION_DIR / f"{matched.stem}.py")
+        if new_solution.exists():
+            error("A solution file for this problem already exists!")
+            exit(1)
+        with open(new_solution, "w") as w:
+            w.write(f"def {pattern}():\n    pass")
 
     def submit(self, pattern):
         matched = match_pattern("test_", "py", pattern, TEST_DIR)
@@ -65,6 +73,32 @@ class CLI:
 
     def test(self):
         pytest.main([str(TEST_DIR)])
+
+    def create(self, name):
+        TEST_TEMPLATE = """\n
+        from tony_tests.tests.utils import import_solution
+
+        {problem} = import_solution("{problem}")
+
+
+        def test_{problem}():
+            assert False, "no test yet!"
+
+        """
+        is_problem = re.compile(r"\d{2}_.+\.md")
+        next_number = f'{len([f for f in os.listdir(PROBLEM_DIR) if re.match(is_problem, f)]) + 1:02d}'
+        problem_file = Path(PROBLEM_DIR / f"{next_number}_{name}.md")
+        test_file = Path(TEST_DIR / f"test_{next_number}_{name}.py")
+        if problem_file.exists():
+            error(f"{problem_file} exists; skipping")
+        else:
+            with open(problem_file, 'w'):
+                pass
+        if test_file.exists():
+            error(f"{test_file} exists; skipping")
+        else:
+            with open(test_file, 'w') as w:
+                w.write(TEST_TEMPLATE.format(problem=name))
 
 
 def main():

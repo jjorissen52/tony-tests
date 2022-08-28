@@ -34,11 +34,8 @@ def match_pattern(prefix, suffix, pattern, dir):
     exit(1)
 
 
-"""
-Everything below was ripped shamelessly from 
-https://github.com/django/django/blob/0dd29209091280ccf34e07c9468746c396b7778e/django/utils/module_loading.py
-"""
-
+# Everything below was ripped shamelessly from
+# https://github.com/django/django/blob/0dd29209091280ccf34e07c9468746c396b7778e/django/utils/module_loading.py
 
 def cached_import(module_path, class_name):
     # Check whether module is loaded and fully initialized.
