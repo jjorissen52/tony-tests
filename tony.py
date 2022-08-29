@@ -87,6 +87,7 @@ class CLI:
         if new_solution.exists():
             error("A solution file for this problem already exists!")
             exit(1)
+        os.makedirs(SOLUTION_DIR, exist_ok=True)
         with open(new_solution, "w") as w:
             w.write(SOLUTION_TEMPLATE.format(name=new_solution.stem[3:]))
 
