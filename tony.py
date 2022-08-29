@@ -47,7 +47,15 @@ if __name__ == '__main__':
 
 
 class CLI:
+    """
+    CLI for interacting with the problem set. Most of these commands accept a single "pattern" to describe
+    which problem you are interacting with. E.g., patterns corresponding to fizzbuzz would be 01 or fizzbuzz.
+    """
     def problem(self, pattern=None):
+        """
+        Display the instructions of the indicated problem. If no pattern is provided,
+        the instructions of the next pattern in the list will be displayed.
+        """
         problem = None
         if pattern:
             problem = match_pattern("", "md", pattern, PROBLEM_DIR)
@@ -71,6 +79,9 @@ class CLI:
             console.print(Markdown(f"# {problem.stem}"))
 
     def start(self, pattern):
+        """
+        Creates a new empty solution file for the indicated problem.
+        """
         matched = match_pattern("", "md", pattern, PROBLEM_DIR)
         new_solution = Path(SOLUTION_DIR / f"{matched.stem}.py")
         if new_solution.exists():
@@ -80,16 +91,25 @@ class CLI:
             w.write(SOLUTION_TEMPLATE.format(name=new_solution.stem[3:]))
 
     def run(self, pattern):
+        """
+        Run your solution as a script.
+        """
         matched = match_pattern("", "py", pattern, SOLUTION_DIR)
         runpy.run_path(matched, run_name='__main__')
 
     def submit(self, pattern):
+        """
+        Submits your solution and checks it against the tests.
+        """
         matched = match_pattern("test_", "py", pattern, TEST_DIR)
         result = not int(pytest.main([str(matched)]))
         store_results([(matched.stem.replace("test_", ""), result)])
         result and self.results()
 
     def results(self):
+        """
+        Shows the results of all the solutions you've submitted so far.
+        """
         results = {}
         if RESULTS_FILE.exists():
             with open(RESULTS_FILE, "r") as r:
