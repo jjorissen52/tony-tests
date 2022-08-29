@@ -5,7 +5,7 @@ from pathlib import Path
 import fire
 import pytest
 
-from tony_tests.settings import TEST_DIR, PROBLEM_DIR
+from tony_tests.settings import TEST_DIR, PROBLEM_DIR, RESULTS_FILE
 from tony_tests.utils import error, match_pattern
 
 
@@ -42,6 +42,9 @@ def test_{problem}():
         else:
             with open(test_file, 'w') as w:
                 w.write(TEST_TEMPLATE.format(problem=name))
+
+    def rm(self):
+        os.remove(RESULTS_FILE)
 
 
 def main():

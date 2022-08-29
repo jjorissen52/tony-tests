@@ -61,9 +61,14 @@ class CLI:
                     path = Path(PROBLEM_DIR / file)
                     if not results.get(path.stem, {}).get('correct', False):
                         problem = path
+                        break
+        if not problem:
+            return console.print("[cyan]What??? You've done everything already!! 🎉 🎉 🎉")
 
         with open(problem) as p:
+            console.print(Markdown(f"# {problem.stem}"))
             console.print(Markdown(p.read()))
+            console.print(Markdown(f"# {problem.stem}"))
 
     def start(self, pattern):
         matched = match_pattern("", "md", pattern, PROBLEM_DIR)

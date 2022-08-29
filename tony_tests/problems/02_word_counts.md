@@ -20,7 +20,7 @@ String:
 the big brown fox jumped over THE lazy dog
 ```
 Solution:
-```
+```json
 {
   "dog": 1,
   "over": 1,
