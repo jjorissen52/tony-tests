@@ -1,4 +1,4 @@
-## What's the buzz about?
+# What's the buzz about?
 This is a traditional "easy" programming test, 
 just so we know you have some idea what's going on.
 

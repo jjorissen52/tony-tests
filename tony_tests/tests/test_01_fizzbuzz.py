@@ -4,8 +4,10 @@ fizzbuzz = import_solution("fizzbuzz")
 
 
 def test_fizzbuzz():
-    result = fizzbuzz(10000)
-    for i, item in enumerate(result):
+    n = 10000
+    result = fizzbuzz(n)
+    for i in range(n):
+        item = result[i]
         if i % 15 == 0:
             assert item == "FizzBuzz"
         elif i % 3 == 0:

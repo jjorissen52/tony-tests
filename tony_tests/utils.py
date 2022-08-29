@@ -13,7 +13,7 @@ def error(*args, **kwargs):
     console.print(*args, style="red", **kwargs)
 
 
-def match_pattern(prefix, suffix, pattern, dir):
+def match_pattern(prefix, suffix, pattern, dir, fail_hard=True):
     all_files = [f for f in os.listdir(dir)
                  if os.path.isfile(dir / f)]
     full_match = re.compile(f"{pattern}")
@@ -27,11 +27,13 @@ def match_pattern(prefix, suffix, pattern, dir):
         if len(matches) > 1:
             error(f"More than one match for pattern {pattern}:")
             error(f"{[dir / m for m in matches]}")
-            exit(1)
-        if matches:
+            fail_hard and exit(1)
+            break
+        elif matches:
             return dir / matches[0]
-    console.print(f"No matches for pattern {pattern}")
-    exit(1)
+    if fail_hard:
+        error(f"No matches for pattern {pattern}")
+        exit(1)
 
 
 # Everything below was ripped shamelessly from
