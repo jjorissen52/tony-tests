@@ -13,14 +13,14 @@ def error(*args, **kwargs):
     console.print(*args, style="red", **kwargs)
 
 
-def match_pattern(prefix, suffix, pattern, dir, fail_hard=True):
+def match_pattern(prefix, suffix, pattern, dir, fail_hard=True, predicate=os.path.isfile):
     all_files = [f for f in os.listdir(dir)
-                 if os.path.isfile(dir / f)]
+                 if predicate(dir / f)]
     full_match = re.compile(f"{pattern}")
-    stem_match = re.compile(rf"{prefix}.*{pattern}.*\.{suffix}")
-    removed_stem_match = re.compile(rf"{prefix}.*{Path(pattern).stem}.*\.{suffix}")
-    name_match = re.compile(rf"{prefix}\d+_.*{pattern}.*\.{suffix}")
-    number_match = re.compile(rf"{prefix}{pattern}_.+\.{suffix}")
+    stem_match = re.compile(rf"{prefix}.*{pattern}.*\.?{suffix}")
+    removed_stem_match = re.compile(rf"{prefix}.*{Path(pattern).stem}.*\.?{suffix}")
+    name_match = re.compile(rf"{prefix}\d+_.*{pattern}.*\.?{suffix}")
+    number_match = re.compile(rf"{prefix}{pattern}_.+\.?{suffix}")
 
     for matcher in [number_match, name_match, stem_match, full_match, removed_stem_match]:
         matches = [f for f in all_files if matcher.match(f)]

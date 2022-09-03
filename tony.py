@@ -13,7 +13,7 @@ from pathlib import Path
 from rich.markdown import Markdown
 from rich.table import Table
 
-from tony_tests.settings import TEST_DIR, PROBLEM_DIR, RESULTS_FILE
+from tony_tests.settings import TEST_DIR, PROBLEM_DIR, FIXTURES_DIR, RESULTS_FILE
 from tony_tests.tests.utils import SOLUTION_DIR
 from tony_tests.utils import match_pattern, console, error
 
@@ -106,6 +106,19 @@ class CLI:
         result = not int(pytest.main([str(matched)]))
         store_results([(matched.stem.replace("test_", ""), result)])
         result and self.results()
+
+    def fixtures(self, pattern):
+        """
+        Lists any fixtures (files) related to the indicated problem.
+        """
+        matched = match_pattern("", "", pattern, FIXTURES_DIR, predicate=os.path.isdir)
+        files = sorted([matched / f for f in os.listdir(matched) if os.path.isfile(matched / f)])
+        table = Table()
+        table.add_column("Name", style="cyan")
+        table.add_column("Path", justify="right", style="purple")
+        for file in files:
+            table.add_row(file.name, str(file))
+        console.print(table)
 
     def results(self):
         """

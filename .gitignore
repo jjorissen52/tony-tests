@@ -1,6 +1,7 @@
 /.idea
 /.vscode
 /venv
+/.direnv
 /.pytest_cache
 /__pycache__
 
