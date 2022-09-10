@@ -196,3 +196,5 @@ def main():
                 default="y"
             ):
                 runpy.run_path(BASE_DIR.parent / "update.py", run_name='__main__')
+                if os.path.exists(CACHE_FILE):
+                    os.remove(CACHE_FILE)
