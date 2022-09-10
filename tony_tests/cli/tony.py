@@ -7,6 +7,7 @@ import time
 import runpy
 from threading import Thread
 from typing import List
+from importlib import metadata
 
 import fire
 import pytest
@@ -20,8 +21,7 @@ from rich.prompt import Confirm
 from rich.table import Table
 
 from tony_tests.settings import TEST_DIR, PROBLEM_DIR, FIXTURES_DIR, RESULTS_FILE, BASE_DIR, REMOTE_PYPROJECT, \
-    CACHE_FILE
-from tony_tests.tests.utils import SOLUTION_DIR
+    CACHE_FILE, SOLUTIONS_DIR
 from tony_tests.utils import match_pattern, console, error
 
 result_tup = collections.namedtuple("result", "problem,result")
@@ -90,11 +90,11 @@ class CLI:
         Creates a new empty solution file for the indicated problem.
         """
         matched = match_pattern("", "md", pattern, PROBLEM_DIR)
-        new_solution = Path(SOLUTION_DIR / f"{matched.stem}.py")
+        new_solution = Path(SOLUTIONS_DIR / f"{matched.stem}.py")
         if new_solution.exists():
             error("A solution file for this problem already exists!")
             exit(1)
-        os.makedirs(SOLUTION_DIR, exist_ok=True)
+        os.makedirs(SOLUTIONS_DIR, exist_ok=True)
         with open(new_solution, "w") as w:
             w.write(SOLUTION_TEMPLATE.format(name=new_solution.stem[3:]))
 
@@ -102,7 +102,7 @@ class CLI:
         """
         Run your solution as a script.
         """
-        matched = match_pattern("", "py", pattern, SOLUTION_DIR)
+        matched = match_pattern("", "py", pattern, SOLUTIONS_DIR)
         runpy.run_path(matched, run_name='__main__')
 
     def submit(self, pattern):
@@ -152,6 +152,12 @@ class CLI:
                 )
         console.print(table)
 
+    def update(self):
+        """
+        Install the latest update
+        """
+        runpy.run_path(BASE_DIR / "cli" / "update.py", run_name='__main__')
+
 
 def main():
     q = queue.Queue(maxsize=1)
@@ -188,13 +194,12 @@ def main():
     Thread(target=check_remote_version, daemon=True).start()
     fire.Fire(CLI)
     if remote_version := q.get(timeout=1):
-        with open(BASE_DIR.parent / "pyproject.toml") as r:
-            local_version = toml.load(r)["tool"]["poetry"]["version"]
+        local_version = metadata.metadata('tony-tests')['Version']
         if remote_version != local_version:
             if Confirm.ask(
-                "[cyan]Looks like there's a tony-tests update available! Would you like to install it?",
+                f"[purple]({local_version}) [cyan]Looks like tony-tests {remote_version} is available! Would you like to install it?",
                 default="y"
             ):
-                runpy.run_path(BASE_DIR.parent / "update.py", run_name='__main__')
+                runpy.run_path(BASE_DIR / "cli" / "update.py", run_name='__main__')
                 if os.path.exists(CACHE_FILE):
                     os.remove(CACHE_FILE)

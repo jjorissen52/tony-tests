@@ -1,13 +1,13 @@
 [tool.poetry]
 name = "tony_tests"
-version = "0.1.2"
+version = "0.2.0"
 description = "Just seeing how Tony is progressing"
 authors = ["jjorissen52 <jjorissen52@gmail.com>"]
 
 [tool.poetry.scripts]
-tony = "tony:main"
-jp = "jp:main"
-update = "update:main"
+tony = "tony_tests.cli.tony:main"
+jp = "tony_tests.cli.jp:main"
+update = "tony_tests.cli.update:main"
 
 [tool.poetry.dependencies]
 python = ">=3.8,<4.0"
@@ -17,8 +17,12 @@ rich = "^12.5.1"
 english-words = "^1.1.0"
 pandas = "^1.4.4"
 toml = "^0.10.2"
+pydantic = "^1.10.2"
 
 [tool.poetry.dev-dependencies]
+
+[tool.poetry.group.dev.dependencies]
+ipython = "^8.5.0"
 
 [tool.black]
 line-length = 120

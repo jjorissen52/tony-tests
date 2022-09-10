@@ -5,8 +5,8 @@ from pathlib import Path
 import fire
 import pytest
 
-from tony_tests.settings import TEST_DIR, PROBLEM_DIR, RESULTS_FILE
-from tony_tests.utils import error, match_pattern
+from tony_tests.settings import TEST_DIR, PROBLEM_DIR, RESULTS_FILE, CACHE_FILE, CONFIG_FILE
+from tony_tests.utils import error, match_pattern, import_string
 
 
 class CLI:
@@ -43,8 +43,15 @@ def test_{problem}():
             with open(test_file, 'w') as w:
                 w.write(TEST_TEMPLATE.format(problem=name))
 
-    def rm(self):
-        os.remove(RESULTS_FILE)
+    def rm(self, results=False, cache=False, config=False):
+        if not (results or cache or config):
+            error("Must include at least one to remove.")
+        results and os.remove(RESULTS_FILE)
+        cache and os.remove(CACHE_FILE)
+        config and os.remove(CONFIG_FILE)
+
+    def run(self, obj, arg):
+        return import_string(obj)(arg)
 
 
 def main():
