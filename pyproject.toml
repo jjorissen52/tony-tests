@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tony_tests"
-version = "0.1.1"
+version = "0.1.2"
 description = "Just seeing how Tony is progressing"
 authors = ["jjorissen52 <jjorissen52@gmail.com>"]
 
@@ -17,7 +17,6 @@ rich = "^12.5.1"
 english-words = "^1.1.0"
 pandas = "^1.4.4"
 toml = "^0.10.2"
-GitPython = "^3.1.27"
 
 [tool.poetry.dev-dependencies]
 
