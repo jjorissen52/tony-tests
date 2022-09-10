@@ -27,7 +27,7 @@ def test_marketing():
     destination = DIR / "output.csv"
 
     names_df = pandas.DataFrame(dict(ID=ids, Name=names))
-    emails_df = pandas.DataFrame(dict(ID=ids, Email=emails))
+    emails_df = pandas.DataFrame(dict(ID=reversed(ids), Email=emails))
 
     names_df.to_csv(names_location, index=False)
     emails_df.to_csv(emails_location, index=False)
