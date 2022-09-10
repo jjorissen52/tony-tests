@@ -2,18 +2,25 @@ import collections
 import datetime
 import json
 import os
+import queue
 import time
 import runpy
+from threading import Thread
 from typing import List
 
 import fire
 import pytest
+import toml
 
 from pathlib import Path
+
+import requests
 from rich.markdown import Markdown
+from rich.prompt import Confirm
 from rich.table import Table
 
-from tony_tests.settings import TEST_DIR, PROBLEM_DIR, FIXTURES_DIR, RESULTS_FILE
+from tony_tests.settings import TEST_DIR, PROBLEM_DIR, FIXTURES_DIR, RESULTS_FILE, BASE_DIR, REMOTE_PYPROJECT, \
+    CACHE_FILE
 from tony_tests.tests.utils import SOLUTION_DIR
 from tony_tests.utils import match_pattern, console, error
 
@@ -147,4 +154,45 @@ class CLI:
 
 
 def main():
+    q = queue.Queue(maxsize=1)
+
+    def check_remote_version():
+        start = time.time()
+
+        def get_cached():
+            payload = None
+            if os.path.exists(CACHE_FILE):
+                try:
+                    with open(CACHE_FILE) as r:
+                        cached = json.load(r)
+                    exp = cached.get("exp", 0)
+                    if exp > start:
+                        payload = cached["payload"]
+                except:  # noqa
+                    os.remove(CACHE_FILE)
+            if payload:
+                return payload
+            payload = requests.get(REMOTE_PYPROJECT).text
+            with open(CACHE_FILE, "w") as w:
+                json.dump(dict(
+                    exp=start + 3600,  # expire in an hour
+                    payload=payload
+                ), w)
+            return payload
+
+        try:
+            q.put(toml.loads(get_cached())["tool"]["poetry"]["version"])
+        except:  # noqa
+            q.put(None)
+
+    Thread(target=check_remote_version, daemon=True).start()
     fire.Fire(CLI)
+    if remote_version := q.get(timeout=1):
+        with open(BASE_DIR.parent / "pyproject.toml") as r:
+            local_version = toml.load(r)["tool"]["poetry"]["version"]
+        if remote_version != local_version:
+            if Confirm.ask(
+                "[cyan]Looks like there's a tony-tests update available! Would you like to install it?",
+                default="y"
+            ):
+                runpy.run_path(BASE_DIR.parent / "update.py", run_name='__main__')
