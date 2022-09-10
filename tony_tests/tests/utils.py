@@ -1,13 +1,14 @@
-from pathlib import Path
+import os.path
+import sys
 
+from tony_tests.settings import SOLUTIONS_DIR
 from tony_tests.utils import error, import_string, match_pattern
-
-SOLUTION_DIR = Path(__file__).parent.parent / "solutions"
 
 
 def import_solution(obj):
-    module_match = match_pattern("", "py", obj, SOLUTION_DIR)
-    full_obj_name = f"tony_tests.solutions.{module_match.stem}.{obj}"
+    sys.path.insert(0, os.path.abspath(SOLUTIONS_DIR))
+    module_match = match_pattern("", "py", obj, SOLUTIONS_DIR)
+    full_obj_name = f"{module_match.stem}.{obj}"
     try:
         return import_string(full_obj_name)
     except: # noqa

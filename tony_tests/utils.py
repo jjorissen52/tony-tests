@@ -6,7 +6,7 @@ from pathlib import Path
 
 from rich.console import Console
 
-console = Console()
+console = Console(file=sys.stderr)
 
 
 def error(*args, **kwargs):
