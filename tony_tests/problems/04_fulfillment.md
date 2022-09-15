@@ -1,4 +1,4 @@
-# Funny Title
+# Manifest Destiny
 Well, the warehouse is having technical issues again... 
 Unfortunately, the computer that we use tell us what items to pull from the shelves
 for order fulfillment is on the fritz. I need you to create a manifest file
@@ -16,28 +16,33 @@ are Orders and Order Details. You'll  be able to tell that an order hasn't shipp
 will be NULL for that order. Here's a simplified example of those tables:
 
 ### Orders
-| OrderID | ShippedDate |
-|---------|-------------|
-| 123     | NULL        |
-| 124     | NULL        |
-| 125     | 2022-09-15  |
+
+```csv
+OrderID,ShippedDate
+123,NULL
+124,NULL
+125,2022-09-15
+```
 
 ### Order Details
-| OrderID | ProductID | Quantity |
-|---------|-----------|----------|
-| 123     | 700       | 3        |
-| 123     | 100       | 7        |
-| 124     | 115       | 7        |
-| 125     | 134       | 2        |
+
+```csv
+OrderID,ProductID,Quantity
+123,700,3
+123,100,7
+134,115,7
+125,134,2
+```
 
 Your generated manifest should then look like this:
 ### Manifest
-| order_id | product_id | quantity |
-|----------|------------|----------|
-| 123      | 700        | 3        |
-| 123      | 100        | 7        |
-| 124      | 115        | 7        |
 
+```csv
+order_id,product_id,quantity
+123,700,3
+123,100,7
+134,115,7
+```
 
 
 ---------------------------------------
