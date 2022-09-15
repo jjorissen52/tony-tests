@@ -20,9 +20,9 @@ from rich.markdown import Markdown
 from rich.prompt import Confirm
 from rich.table import Table
 
-from tony_tests.settings import TEST_DIR, PROBLEM_DIR, FIXTURES_DIR, RESULTS_FILE, BASE_DIR, REMOTE_PYPROJECT, \
+from tony_tests.settings import TEST_DIR, PROBLEM_DIR, FIXTURE_DIR, RESULTS_FILE, BASE_DIR, REMOTE_PYPROJECT, \
     CACHE_FILE, SOLUTIONS_DIR
-from tony_tests.utils import match_pattern, console, error
+from tony_tests.utils import match_pattern, console, error, load_solution_template
 
 result_tup = collections.namedtuple("result", "problem,result")
 
@@ -41,16 +41,6 @@ def store_results(results: List[result_tup]):
             current[problem] = dict(correct=True, solved=time.time())
     with open(RESULTS_FILE, "w") as w:
         json.dump(current, w)
-
-
-SOLUTION_TEMPLATE = """\
-def {name}():
-    return "Hello World!"
-
-
-if __name__ == '__main__':
-    print({name}())
-"""
 
 
 class CLI:
@@ -96,7 +86,7 @@ class CLI:
             exit(1)
         os.makedirs(SOLUTIONS_DIR, exist_ok=True)
         with open(new_solution, "w") as w:
-            w.write(SOLUTION_TEMPLATE.format(name=new_solution.stem[3:]))
+            w.write(load_solution_template(matched.stem, name=new_solution.stem[3:]))
 
     def run(self, pattern):
         """
@@ -110,7 +100,7 @@ class CLI:
         Submits your solution and checks it against the tests.
         """
         matched = match_pattern("test_", "py", pattern, TEST_DIR)
-        result = not int(pytest.main([str(matched)]))
+        result = not int(pytest.main(["-s", str(matched)]))
         store_results([(matched.stem.replace("test_", ""), result)])
         result and self.results()
 
@@ -118,7 +108,7 @@ class CLI:
         """
         Lists any fixtures (files) related to the indicated problem.
         """
-        matched = match_pattern("", "", pattern, FIXTURES_DIR, predicate=os.path.isdir)
+        matched = match_pattern("", "", pattern, FIXTURE_DIR, predicate=os.path.isdir)
         files = sorted([matched / f for f in os.listdir(matched) if os.path.isfile(matched / f)])
         table = Table()
         table.add_column("Name", style="cyan")

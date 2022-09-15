@@ -3,8 +3,11 @@ import os
 import re
 import sys
 from pathlib import Path
+from typing import Optional
 
 from rich.console import Console
+
+from tony_tests.settings import TEMPLATE_DIR
 
 console = Console(file=sys.stderr)
 
@@ -13,7 +16,7 @@ def error(*args, **kwargs):
     console.print(*args, style="red", **kwargs)
 
 
-def match_pattern(prefix, suffix, pattern, dir, fail_hard=True, predicate=os.path.isfile):
+def match_pattern(prefix, suffix, pattern, dir, fail_hard=True, predicate=os.path.isfile) -> Optional[Path]:
     all_files = [f for f in os.listdir(dir)
                  if predicate(dir / f)]
     full_match = re.compile(f"{pattern}")
@@ -67,3 +70,14 @@ def import_string(dotted_path):
             'Module "%s" does not define a "%s" attribute/class'
             % (module_path, class_name)
         ) from err
+
+
+def load_template(template_path, **context):
+    with open(os.path.join(TEMPLATE_DIR, template_path), 'r') as r:
+        return r.read().format(**context)
+
+
+def load_solution_template(problem, **context):
+    template = match_pattern("", "txt", problem, TEMPLATE_DIR, fail_hard=False)
+    template_name = template.name if template else "default.txt"
+    return load_template(template_name, **context)

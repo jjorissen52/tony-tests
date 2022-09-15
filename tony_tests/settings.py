@@ -16,7 +16,8 @@ logger = logging.getLogger(__name__)
 BASE_DIR = Path(__file__).parent
 TEST_DIR = BASE_DIR / "tests"
 PROBLEM_DIR = BASE_DIR / "problems"
-FIXTURES_DIR = BASE_DIR / "fixtures"
+FIXTURE_DIR = BASE_DIR / "fixtures"
+TEMPLATE_DIR = BASE_DIR / "templates"
 CONFIG_DIR = Path(os.environ["HOME"]) / ".config" / "tony_tests"
 CONFIG_FILE = CONFIG_DIR / "config.json"
 
