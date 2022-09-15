@@ -24,7 +24,7 @@ CONFIG_FILE = CONFIG_DIR / "config.json"
 
 @dataclass
 class Config:
-    REMOTE_PYPROJECT: str = "https:\/\/raw.githubusercontent.com/jjorissen52/tony-tests/master/pyproject.toml"
+    REMOTE_PYPROJECT: str = "https://raw.githubusercontent.com/jjorissen52/tony-tests/master/pyproject.toml"
     RESULTS_FILE: Path = CONFIG_DIR / "results.json"
     CACHE_FILE: Path = CONFIG_DIR / "cache"
     SOLUTIONS_DIR: Path = None
